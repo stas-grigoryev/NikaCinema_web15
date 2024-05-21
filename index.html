@@ -1101,10 +1101,22 @@
         let cellIds = []; 
         
         bookBtn.addEventListener("click", () => {
-            const bookingDetails = secondParts.map(item => {
+            // Разбиение каждого элемента secondParts, создание массива со временами начала и окончания
+            const times = secondParts.map(item => {
                 const parts = item.split("-");
-                return [searchParams.get("date"), parts[1], parts[2], parts[0]];
+                return [parts[1], parts[2]];
             });
+            
+            // Получение минимального и максимального времени из массива times
+            let minStartTime = times.reduce((acc, cur) => acc[0] < cur[0] ? acc : cur)[0];
+            let maxEndTime = times.reduce((acc, cur) => acc[1] > cur[1] ? acc : cur)[1];
+
+            // Получение номеров дорожек из каждого элемента secondParts и создание массива trackNumbers
+            const trackNumbers = secondParts.map(item => item.split("-")[0]);
+            
+            // Сборка окончательного массива bookingDetails
+            const bookingDetails = [searchParams.get("date"), minStartTime, maxEndTime, trackNumbers];
+		
             zakaz_data = {
               firstParts,
               secondParts,
