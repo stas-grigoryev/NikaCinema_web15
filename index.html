@@ -1107,14 +1107,16 @@
             
             secondParts.forEach(item => {
                 let parts = item.split("-");
-                trackNumbers.push(parseInt(parts[0]));
+                let trackNumber = parseInt(parts[0]);
+                
+                if(!trackNumbers.includes(trackNumber)){
+                    trackNumbers.push(trackNumber);
+                }
+                
                 startTimes.push(parts[1]);
                 endTimes.push(parts[2]);
             });
-
-            // Убираем дубликаты в trackNumbers
-            trackNumbers = Array.from(new Set(trackNumbers));
-
+            
             let minStartTime = startTimes.sort()[0];
             let maxEndTime = endTimes.sort()[endTimes.length - 1];
 
