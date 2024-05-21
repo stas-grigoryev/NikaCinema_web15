@@ -1064,15 +1064,11 @@
     </tr>
   </table>
 
-  <script>
+<script>
     // Получение строки параметров из текущего URL
     var paramsString = document.location.search;  
     // Преобразование строки параметров в объект для удобного доступа
     var searchParams = new URLSearchParams(paramsString);
-    
-    // Вывод полученных значений "data" и "date" в консоль для отладки
-    // console.log('data: ', searchParams.get("data"));
-    // console.log('date: ', searchParams.get("date"));
     
     // Преобразование полученного значения "data" из формата JSON в объект JavaScript
     let data = JSON.parse(searchParams.get("data"));
@@ -1080,78 +1076,58 @@
     // Вывод полученного значения "date" в элемент на странице с ID "date"
     document.getElementById("date").innerHTML = searchParams.get("date"); 
 
-    // Получение всех ячеек таблицы, которые помечены как не занятые ("not occupied")
     let cells = document.querySelectorAll('td:not(.occupied)');
 
     // Перебор каждой ячейки
     cells.forEach((cell, index) => {
-      // Если значение соответствующий индекс в данных равен 0
       if(data[index] == 0) {
-        // Очистка содержимого ячейки и добавление класса freetime (свободное время)
         cell.innerHTML = '';  
         cell.classList.add('freetime');
       } else {
-        // Если значение не равно нулю, добавление "X" в ячейку и класса occupied (занятое время)
         cell.innerHTML = 'X'; 
         cell.classList.add('occupied');
       };
     });
 
-    // Получение объекта webapp телеграма 
     let tg = window.Telegram.WebApp; 
-
-    // Расширение телеграма на все окно 
     tg.expand(); 
 
     window.onload = function() {
-        // Получение кнопки по идентификатору
         let bookBtn = document.getElementById('book-btn');
         let cells = document.querySelectorAll('td:not(.occupied)');
         let firstParts = [];
         let secondParts = [];
-        let zakaz_data = [];
+        let zakaz_data = {};
         let cellIds = []; 
         
-        // При клике на кнопку "бронь"...
         bookBtn.addEventListener("click", () => {
-            // Создание объекта с данными бронирования
-            const zakaz_data = {
+            const bookingDetails = secondParts.map(item => {
+                const parts = item.split("-");
+                return [searchParams.get("date"), parts[1], parts[2], parts[0]];
+            });
+            zakaz_data = {
               firstParts,
-              secondParts 
+              secondParts,
+              bookingDetails 
             };
-            // Отправка данных бронирования в телеграм
             tg.sendData(JSON.stringify(zakaz_data));
-            console.log('tg.sendData: ', JSON.stringify(data));
-            // Закрытие телеграм-приложения
+            console.log('tg.sendData: ', JSON.stringify(zakaz_data));
             tg.close();
         });  
       
-        // Для каждой незанятой ячейки...
         for(let cell of cells) {
-
           cell.addEventListener('click', function() {
-
-            // Получение идентификатора ячейки
             let cellId = this.id;
-              
-            // Разделение идентификатора на две части
             const idSplitIndex = cellId.indexOf('_');
             const firstPart = parseInt(cellId.substring(0, idSplitIndex));
             const secondPart = cellId.substring(idSplitIndex + 1);
 
-            // Если цвет фона ячейки не определен значит она незанята
             if(this.style.backgroundColor == '') {
-                // Отметка ячейки как занятой
                 this.style.backgroundColor = 'blue';
-                
-                // Добавление идентификаторов в массивы
                 firstParts.push(firstPart);
                 secondParts.push(secondPart);
             } else {
-                // Отметка ячейки как свободной 
                 this.style.backgroundColor = '';
-
-                // Удаление идентификаторов из массивов
                 firstParts = firstParts.filter(id => id !== firstPart);
                 secondParts = secondParts.filter(id => id !== secondPart); 
               }
@@ -1159,7 +1135,6 @@
         }
       }    
   </script>
-
 
 </body>
 </html>
