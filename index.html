@@ -1113,7 +1113,7 @@
             });
 
             // Убираем дубликаты в trackNumbers
-            trackNumbers = [...new Set(trackNumbers)].map(Number);
+            trackNumbers = Array.from(new Set(trackNumbers));
 
             let minStartTime = startTimes.sort()[0];
             let maxEndTime = endTimes.sort()[endTimes.length - 1];
